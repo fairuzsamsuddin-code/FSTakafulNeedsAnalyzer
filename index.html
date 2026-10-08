@@ -69,7 +69,7 @@ background-image:radial-gradient(ellipse 60% 40% at 15% 0%,rgba(217,0,13,.22),tr
 
  <section id="benchmarks" class="mt-20 reveal">
   <h2 class="text-2xl font-bold mb-1" data-i18n>Inflation &amp; Industry Benchmarks</h2>
-  <p class="muted text-sm mb-5" data-i18n>Planning rules of thumb used by this calculator. Rates in red are the fixed assumptions.</p>
+  <p class="muted text-sm mb-5" data-i18n>Planning rules of thumb used by this calculator. Rates in red are adjustable assumptions (see Inflation assumptions in the form).</p>
   <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4" id="bm"></div>
  </section>
  <section id="illness" class="mt-20 reveal"></section>
@@ -87,11 +87,11 @@ background-image:radial-gradient(ellipse 60% 40% at 15% 0%,rgba(217,0,13,.22),tr
 </main>
 
 <script>
-const GEN=.03,MED=.12,RET=.05,REPL=.7,FINAL=25000,CIYRS=5,LIFE=75,SENIOR=60,SENIORH=80,EDUSTART=18,PRAC=10;
+let GEN=.03,MED=.12;const RET=.05,REPL=.7,FINAL=25000,CIYRS=5,LIFE=75,SENIOR=60,SENIORH=80,EDUSTART=18,PRAC=10;
 let lang='ms',last=null,saved={};const LS='fs_takaful_v1';
 try{const o=JSON.parse(localStorage.getItem(LS)||'{}');saved=o.v||{};lang=o.l||'ms'}catch(e){}
 const persist=()=>{try{localStorage.setItem(LS,JSON.stringify({v:saved,l:lang}))}catch(e){}};
-const B=(en,ms)=>lang==='ms'?ms:en;
+const B=(en,ms)=>pr(lang==='ms'?ms:en);
 const MS={
 'Client Details':'Butiran Klien','Benchmarks':'Penanda Aras','Results':'Keputusan',
 'Protection planning, simplified':'Perancangan perlindungan, dipermudahkan',
@@ -99,7 +99,7 @@ const MS={
 "Enter the client's current position. The analyzer projects needs with 3% general and 12% medical inflation and shows the gap to close.":'Masukkan kedudukan kewangan semasa klien. Penganalisis ini menganggar keperluan dengan inflasi am 3% dan inflasi perubatan 12%, serta menunjukkan jurang yang perlu ditutup.',
 'Start Analysis':'Mulakan Analisis','Calculate Protection Needs':'Kira Keperluan Perlindungan','Reset':'Set Semula',
 'Inflation &amp; Industry Benchmarks':'Inflasi &amp; Penanda Aras Industri',
-'Planning rules of thumb used by this calculator. Rates in red are the fixed assumptions.':'Panduan perancangan yang digunakan kalkulator ini. Kadar berwarna merah ialah andaian tetap.',
+'Planning rules of thumb used by this calculator. Rates in red are adjustable assumptions (see Inflation assumptions in the form).':'Panduan perancangan yang digunakan kalkulator ini. Kadar berwarna merah ialah andaian yang boleh diubah (lihat Andaian inflasi dalam borang).',
 'About the client':'Mengenai klien','Client name':'Nama klien','Current age':'Umur semasa','Planned retirement age':'Umur persaraan yang dirancang',
 'Full name as it should appear on the report.':'Nama penuh seperti yang akan dipaparkan dalam laporan.',
 'Used to work out how many working years of income the family would lose.':'Digunakan untuk mengira bilangan tahun pendapatan yang akan hilang daripada keluarga.',
@@ -119,9 +119,9 @@ const MS={
 'Total sum covered across all certificates (family and mortgage takaful). Add employer group cover if the client confirms it.':'Jumlah dilindungi merentasi semua sijil (keluarga dan takaful gadai janji). Tambah perlindungan kumpulan majikan jika klien mengesahkannya.',
 'Total critical illness benefit across all certificates, including riders.':'Jumlah faedah penyakit kritikal merentasi semua sijil, termasuk rider.',
 'Annual limit of the medical plan. Lifetime limits do not replace this figure.':'Had tahunan pelan perubatan. Had seumur hidup tidak menggantikan angka ini.',
-"e.g. Ahmad":'cth. Ahmad',"Youngest child's current age":'Umur semasa anak bongsu','Age of your youngest child today. Leave blank if there are no dependent children.':'Umur anak bongsu hari ini. Biarkan kosong jika tiada anak tanggungan.','Age the youngest child becomes independent':'Umur anak bongsu berdikari','Age the youngest child is expected to finish studies, start working and earn enough to live independently. Usually 23–25. Leave blank to use 25.':'Umur anak bongsu dijangka tamat pengajian, mula bekerja dan mampu menanggung diri sendiri. Biasanya 23–25. Kosongkan untuk guna 25.','Life expectancy (DOSM 2025)':'Jangka hayat (DOSM 2025)','75.3 years':'75.3 tahun','Average Malaysian lifespan (males 73.1, females 77.9). Used as the long-term medical reference: age 75, or 80 if the client is 60 or above.':'Purata hayat rakyat Malaysia (lelaki 73.1, wanita 77.9). Digunakan sebagai rujukan perubatan jangka panjang: umur 75, atau 80 jika klien berumur 60 tahun ke atas.','Info about':'Maklumat tentang',
-'General inflation':'Inflasi am','Fixed assumption. Malaysian long-run average sits around 2–3%.':'Andaian tetap. Purata jangka panjang Malaysia sekitar 2–3%.',
-'Medical inflation':'Inflasi perubatan','Fixed assumption. Industry estimates run roughly 10–15% a year.':'Andaian tetap. Anggaran industri sekitar 10–15% setahun.',
+"e.g. Ahmad":'cth. Ahmad','Inflation assumptions (adjustable)':'Andaian inflasi (boleh diubah)','General inflation rate (% a year)':'Kadar inflasi am (% setahun)','Medical inflation rate (% a year)':'Kadar inflasi perubatan (% setahun)',"Expected yearly rise in everyday costs such as food, rent and school fees. The default is 3 per cent, close to Malaysia's long-run average of about 2–3 per cent. Update this if the national figure changes.":'Jangkaan kenaikan kos harian setiap tahun seperti makanan, sewa dan yuran sekolah. Lalai ialah 3 peratus, hampir dengan purata jangka panjang Malaysia sekitar 2–3 peratus. Ubah jika angka negara berubah.','Expected yearly rise in medical bills. The default is 12 per cent, in line with industry estimates of roughly 10–15 per cent a year. Update it when new medical card pricing or industry data comes out.':'Jangkaan kenaikan bil perubatan setiap tahun. Lalai ialah 12 peratus, selaras dengan anggaran industri sekitar 10–15 peratus setahun. Ubah apabila ada data harga kad perubatan atau industri terkini.','Inflation rates must be between 0% and 30%.':'Kadar inflasi mesti antara 0% dan 30%.',"Youngest child's current age":'Umur semasa anak bongsu','Age of your youngest child today. Leave blank if there are no dependent children.':'Umur anak bongsu hari ini. Biarkan kosong jika tiada anak tanggungan.','Age the youngest child becomes independent':'Umur anak bongsu berdikari','Age the youngest child is expected to finish studies, start working and earn enough to live independently. Usually 23–25. Leave blank to use 25.':'Umur anak bongsu dijangka tamat pengajian, mula bekerja dan mampu menanggung diri sendiri. Biasanya 23–25. Kosongkan untuk guna 25.','Life expectancy (DOSM 2025)':'Jangka hayat (DOSM 2025)','75.3 years':'75.3 tahun','Average Malaysian lifespan (males 73.1, females 77.9). Used as the long-term medical reference: age 75, or 80 if the client is 60 or above.':'Purata hayat rakyat Malaysia (lelaki 73.1, wanita 77.9). Digunakan sebagai rujukan perubatan jangka panjang: umur 75, atau 80 jika klien berumur 60 tahun ke atas.','Info about':'Maklumat tentang',
+'General inflation':'Inflasi am','Adjustable assumption. Malaysian long-run average sits around 2–3%.':'Andaian boleh diubah. Purata jangka panjang Malaysia sekitar 2–3%.',
+'Medical inflation':'Inflasi perubatan','Adjustable assumption. Industry estimates run roughly 10–15% a year.':'Andaian boleh diubah. Anggaran industri sekitar 10–15% setahun.',
 'Emergency fund':'Dana kecemasan','6 months':'6 bulan','Liquid savings of 6 months of household expenses.':'Simpanan mudah cair bernilai 6 bulan perbelanjaan isi rumah.',
 'Debt service ratio':'Nisbah khidmat hutang','Monthly debt payments as a share of gross income.':'Bayaran hutang bulanan sebagai peratusan pendapatan kasar.',
 'Savings rate':'Kadar simpanan','Share of income left after expenses and debt payments.':'Peratusan pendapatan selepas perbelanjaan dan bayaran hutang.',
@@ -153,7 +153,10 @@ const MS={
 'Takaful Needs Analysis Report':'Laporan Analisis Keperluan Takaful','Prepared for:':'Disediakan untuk:','Age {0}, retirement at {1}':'Umur {0}, bersara pada {1}','Overall protection:':'Perlindungan keseluruhan:',
 'Death / TPD':'Kematian / TPD','Critical illness':'Penyakit kritikal','Medical annual limit increase':'Tambahan had tahunan perubatan','Area-by-area review':'Semakan mengikut bidang'
 };
-const T=(k,...a)=>{let s=lang==='ms'?(MS[k]||k):k;a.forEach((x,i)=>s=s.replace('{'+i+'}',x));return s};
+const fp=x=>String(+(x*100).toFixed(2))+'%';
+const pr=s=>s.replace(/(^|[^\d.–-])(3|12)%/g,(m,a,x)=>a+fp(x==='3'?GEN:MED));
+const T=(k,...a)=>{let s=pr(lang==='ms'?(MS[k]||k):k);a.forEach((x,i)=>s=s.replace('{'+i+'}',x));return s};
+const readRates=()=>{const g=parseFloat(saved.gInf),m=parseFloat(saved.mInf);GEN=!isNaN(g)&&g>=0&&g<=30?g/100:.03;MED=!isNaN(m)&&m>=0&&m<=30?m/100:.12};
 const RM=n=>'RM '+Math.round(n).toLocaleString('en-MY');
 const S=[
 ['About the client',[
@@ -173,16 +176,19 @@ const S=[
 ['Existing takaful coverage',[
  ['cDeath','Death / TPD coverage','','Total sum covered across all certificates (family and mortgage takaful). Add employer group cover if the client confirms it.'],
  ['cCI','Critical illness coverage','','Total critical illness benefit across all certificates, including riders.'],
- ['cMed','Medical card annual limit','','Annual limit of the medical plan. Lifetime limits do not replace this figure.']]]];
-const NOPRE=['name','age','retire','eduyrs','childAge','indepAge'];
+ ['cMed','Medical card annual limit','','Annual limit of the medical plan. Lifetime limits do not replace this figure.']]],
+['Inflation assumptions (adjustable)',[
+ ['gInf','General inflation rate (% a year)','pct',"Expected yearly rise in everyday costs such as food, rent and school fees. The default is 3 per cent, close to Malaysia's long-run average of about 2–3 per cent. Update this if the national figure changes."],
+ ['mInf','Medical inflation rate (% a year)','pct','Expected yearly rise in medical bills. The default is 12 per cent, in line with industry estimates of roughly 10–15 per cent a year. Update it when new medical card pricing or industry data comes out.']]]];
+const NOPRE=['name','age','retire','eduyrs','childAge','indepAge','gInf','mInf'],DEF={gInf:'3',mInf:'12'};
 const f=document.getElementById('form');
 function buildForm(){
  const vals=saved;
- f.innerHTML=S.map(([t,fs],i)=>`<div class="glass glow p-6 reveal in"><h2 class="font-bold text-lg mb-4"><span class="text-grad">${i+1}.</span> ${T(t)}</h2>${t==='Future goals'?kidsHtml():''}<div class="grid md:grid-cols-2 gap-4">${fs.map(([k,l,ty,tip])=>`<div><div class="flex items-center justify-between mb-1.5 text-sm"><label for="${k}">${T(l)}</label><span class="tipw"><button type="button" class="tipb" aria-label="${T('Info about')} ${T(l)}">i</button><span class="tip">${T(tip)}</span></span></div><div class="relative">${NOPRE.includes(k)?'':'<span class="pre">RM</span>'}<input id="${k}" class="inp ${NOPRE.includes(k)?'plain':''}" ${ty==='text'?'type="text"':'type="text" inputmode="numeric" autocomplete="off"'} placeholder="${ty==='text'?T('e.g. Ahmad'):k==='indepAge'?'25':'0'}"></div></div>`).join('')}</div></div>`).join('');
+ f.innerHTML=S.map(([t,fs],i)=>`<div class="glass glow p-6 reveal in"><h2 class="font-bold text-lg mb-4"><span class="text-grad">${i+1}.</span> ${T(t)}</h2>${t==='Future goals'?kidsHtml():''}<div class="grid md:grid-cols-2 gap-4">${fs.map(([k,l,ty,tip])=>`<div><div class="flex items-center justify-between mb-1.5 text-sm"><label for="${k}">${T(l)}</label><span class="tipw"><button type="button" class="tipb" aria-label="${T('Info about')} ${T(l)}">i</button><span class="tip">${T(tip)}</span></span></div><div class="relative">${NOPRE.includes(k)?'':'<span class="pre">RM</span>'}<input id="${k}" class="inp ${NOPRE.includes(k)?'plain':''}" ${ty==='text'?'type="text"':ty==='pct'?'type="text" inputmode="decimal" autocomplete="off"':'type="text" inputmode="numeric" autocomplete="off"'} placeholder="${ty==='text'?T('e.g. Ahmad'):k==='indepAge'?'25':'0'}" value="${DEF[k]||''}"></div></div>`).join('')}</div></div>`).join('');
  Object.entries(vals).forEach(([k,x])=>{const el=document.getElementById(k);if(el)el.value=x});
 }
 document.addEventListener('click',e=>{const w=e.target.closest('.tipw');document.querySelectorAll('.tipw.open').forEach(x=>x!==w&&x.classList.remove('open'));if(w&&e.target.closest('.tipb'))w.classList.toggle('open')});
-f.addEventListener('input',e=>{const el=e.target;if(!el.classList.contains('inp'))return;if(el.dataset.f){const d=el.value.replace(/\D/g,'');el.value=d&&el.dataset.f==='c'?(+d).toLocaleString('en-MY'):d;kidsL()[+el.dataset.i][el.dataset.f]=el.value;persist();return}if(el.getAttribute('inputmode')==='numeric'){const d=el.value.replace(/\D/g,'');el.value=d?(NOPRE.includes(el.id)?d:(+d).toLocaleString('en-MY')):''}saved[el.id]=el.value;persist()});
+f.addEventListener('input',e=>{const el=e.target;if(!el.classList.contains('inp'))return;if(el.dataset.f){const d=el.value.replace(/\D/g,'');el.value=d&&el.dataset.f==='c'?(+d).toLocaleString('en-MY'):d;kidsL()[+el.dataset.i][el.dataset.f]=el.value;persist();return}if(el.getAttribute('inputmode')==='numeric'){const d=el.value.replace(/\D/g,'');el.value=d?(NOPRE.includes(el.id)?d:(+d).toLocaleString('en-MY')):''}if(el.getAttribute('inputmode')==='decimal')el.value=el.value.replace(/[^\d.]/g,'').replace(/(\..*)\./g,'$1');saved[el.id]=el.value;persist();if(el.id==='gInf'||el.id==='mInf'){readRates();applyStatic();buildBm()}});
 const kidsL=()=>saved.kids||(saved.kids=[{a:'',c:''}]);
 function kidsHtml(){return `<div class="mb-5"><div class="flex items-center justify-between text-sm mb-2"><span class="font-semibold">${B('Children and education cost','Anak-anak dan kos pendidikan')}</span><span class="tipw"><button type="button" class="tipb" aria-label="Info">i</button><span class="tip">${B('Add each child with their current age and the study cost still to be funded, in today\'s prices (fees, accommodation, books). Each cost is raised 3% a year until the child turns 18. See the cost guide above for a rough idea. Leave blank if there are no children.','Tambah setiap anak dengan umur semasa dan kos pengajian yang masih perlu dibiayai, mengikut harga hari ini (yuran, penginapan, buku). Setiap kos dinaikkan 3% setahun sehingga anak berumur 18 tahun. Rujuk panduan kos di atas untuk anggaran kasar. Biarkan kosong jika tiada anak.')}</span></span></div><div class="space-y-2">${kidsL().map((k,i)=>`<div class="grid grid-cols-[5.5rem,1fr,auto] gap-2 items-center"><input class="inp plain" inputmode="numeric" autocomplete="off" data-i="${i}" data-f="a" value="${k.a}" placeholder="${B('Age','Umur')}" aria-label="${B('Child age','Umur anak')}"><div class="relative"><span class="pre">RM</span><input class="inp" inputmode="numeric" autocomplete="off" data-i="${i}" data-f="c" value="${k.c}" placeholder="${B('Study cost today','Kos pengajian hari ini')}" aria-label="${B('Study cost today','Kos pengajian hari ini')}"></div><button type="button" class="tipb" style="background:var(--red);width:1.6rem;height:1.6rem" data-rm="${i}" aria-label="${B('Remove','Buang')}">✕</button></div>`).join('')}</div><button type="button" id="addKid" class="btn alt mt-3" style="padding:.45rem 1.1rem;font-size:.8rem">+ ${B('Add child','Tambah anak')}</button></div>`}
 f.addEventListener('click',e=>{const r=e.target.closest('[data-rm]');if(r){kidsL().splice(+r.dataset.rm,1);persist();buildForm()}else if(e.target.id==='addKid'){kidsL().push({a:'',c:''});persist();buildForm()}});
@@ -206,8 +212,8 @@ function buildIll(){
 function whyHtml(w,i){return `<details class="why" id="w${i}"><summary>${B('Why this amount?','Kenapa jumlah ini?')}</summary>${w.l.map(([a,b])=>`<div class="wl"><span>${a}</span><b>${b}</b></div>`).join('')}<p class="wt">${w.t}</p></details>`}
 function openWhy(i){const d=document.getElementById('w'+i);d.open=true;d.scrollIntoView({behavior:'smooth',block:'center'})}
 function buildBm(){document.getElementById('bm').innerHTML=[
-['General inflation','3%','Fixed assumption. Malaysian long-run average sits around 2–3%.',1],
-['Medical inflation','12%','Fixed assumption. Industry estimates run roughly 10–15% a year.',1],
+['General inflation','3%','Adjustable assumption. Malaysian long-run average sits around 2–3%.',1],
+['Medical inflation','12%','Adjustable assumption. Industry estimates run roughly 10–15% a year.',1],
 ['Emergency fund','6 months','Liquid savings of 6 months of household expenses.',0],
 ['Debt service ratio','≤ 35%','Monthly debt payments as a share of gross income.',0],
 ['Savings rate','≥ 20%','Share of income left after expenses and debt payments.',0],
@@ -217,15 +223,17 @@ function buildBm(){document.getElementById('bm').innerHTML=[
 ['Life expectancy (DOSM 2025)','75.3 years','Average Malaysian lifespan (males 73.1, females 77.9). Used as the long-term medical reference: age 75, or 80 if the client is 60 or above.',0]
 ].map(([a,b,c,r])=>`<div class="glass tilt p-4"><div class="text-xs muted">${T(a)}</div><div class="text-2xl font-extrabold mt-1" style="color:${r?'var(--redt)':'var(--tealt)'}">${T(b)}</div><div class="text-xs muted mt-1">${T(c)}</div></div>`).join('');initTilt()}
 function applyStatic(){document.querySelectorAll('[data-i18n]').forEach(el=>{el.dataset.en=el.dataset.en||el.innerHTML;el.innerHTML=T(el.dataset.en)})}
-function setLang(l){lang=l;document.documentElement.lang=l;document.getElementById('lm').classList.toggle('on',l==='ms');document.getElementById('le').classList.toggle('on',l==='en');applyStatic();buildForm();buildBm();buildIll();buildGuide();persist();err('');if(last)render(false)}
+function setLang(l){lang=l;readRates();document.documentElement.lang=l;document.getElementById('lm').classList.toggle('on',l==='ms');document.getElementById('le').classList.toggle('on',l==='en');applyStatic();buildForm();buildBm();buildIll();buildGuide();persist();err('');if(last)render(false)}
 const v=k=>parseFloat(document.getElementById(k).value.replace(/,/g,''))||0;
 function calc(){
  const d={};S.forEach(([,fs])=>fs.forEach(([k,,t])=>d[k]=t==='text'?document.getElementById(k).value.trim():v(k)));
  if(!d.income||!d.age){err(T("Please enter at least the client's age and monthly income."));return}
  if(d.retire<=d.age){d.retire=d.age+1}
+ const bad=x=>x!==undefined&&x!==''&&(isNaN(parseFloat(x))||parseFloat(x)<0||parseFloat(x)>30);if(bad(saved.gInf)||bad(saved.mInf)){err(T('Inflation rates must be between 0% and 30%.'));return}
+ readRates();
  err('');
  const K=(saved.kids||[]).map(k=>({a:parseFloat(String(k.a).replace(/,/g,'')),c:parseFloat(String(k.c).replace(/,/g,''))||0})).filter(k=>!isNaN(k.a)||k.c>0),ages=K.filter(k=>!isNaN(k.a)).map(k=>k.a),hasC=ages.length>0,yrsW=d.retire-d.age,n=hasC?Math.max(1,Math.min((d.indepAge||25)-Math.min(...ages),yrsW)):yrsW,A=d.income*12;
- const pvInc=A*REPL*(1-Math.pow((1+GEN)/(1+RET),n))/(RET-GEN);
+ const pvInc=Math.abs(RET-GEN)<1e-9?A*REPL*n/(1+RET):A*REPL*(1-Math.pow((1+GEN)/(1+RET),n))/(RET-GEN);
  const eduFV=K.reduce((s,k)=>s+k.c*Math.pow(1+GEN,Math.max(0,EDUSTART-(isNaN(k.a)?EDUSTART:k.a))),0);
  const ef=d.expenses?6*d.expenses:0,usable=Math.max(0,d.savings-ef);
  const deathNeed=pvInc+d.debt+FINAL+eduFV;
@@ -280,23 +288,66 @@ function render(scroll){
 function roll(el){const to=+el.dataset.roll,sfx=el.dataset.sfx||'',t0=performance.now();(function s(t){const p=Math.min(1,(t-t0)/1400),e=1-Math.pow(1-p,3);el.textContent=Math.round(to*e).toLocaleString('en-MY')+sfx;p<1&&requestAnimationFrame(s)})(t0)}
 function pdf(){
  const {jsPDF}=window.jspdf||{};if(!jsPDF){alert(T('PDF library failed to load. Check your connection.'));return}
- const L=last,doc=new jsPDF({unit:'mm',format:'a4'});let y=18;
- const txt=(s,x,sz=10,b=false,c=[30,30,30])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);const w=doc.splitTextToSize(s,180-(x-15));doc.text(w,x,y);y+=w.length*(sz*.45)+1.5};
- const chk=h=>{if(y+h>280){doc.addPage();y=18}};
- doc.setFillColor(217,0,13);doc.rect(0,0,210,10,'F');doc.setFillColor(0,129,131);doc.rect(105,0,105,10,'F');y=22;
- txt('FS Takaful Needs Analyzer',15,9,true,[217,0,13]);
- txt(T('Takaful Needs Analysis Report'),15,20,true);
- txt(`${T('Prepared for:')} ${L.d.name||'-'}   |   ${T('Age {0}, retirement at {1}',L.d.age,L.d.retire)}   |   ${new Date().toLocaleDateString('en-MY')}`,15,10,false,[90,90,90]);y+=3;
- txt(`${T('Overall protection:')} ${Math.round(L.overall)}%`,15,14,true);
- doc.setFillColor(225,225,225);doc.roundedRect(15,y,180,5,2.5,2.5,'F');doc.setFillColor(L.overall>=100?0:L.overall>=60?232:217,L.overall>=100?129:L.overall>=60?163:0,L.overall>=100?131:L.overall>=60?23:13);doc.roundedRect(15,y,Math.max(2,1.8*Math.min(100,L.overall)),5,2.5,2.5,'F');y+=12;
- txt(T('Recommended additional coverage'),15,13,true);
- txt(`${T('Death / TPD')}: ${RM(L.gaps.death)}`,18);txt(`${T('Critical illness')}: ${RM(L.gaps.ci)}`,18);txt(`${T('Medical annual limit increase')}: ${RM(L.gaps.med)}`,18);y+=3;
- txt(T('Area-by-area review'),15,13,true);
- L.A_.forEach(a=>{chk(50);const f=a.fmt||RM;txt(`${T(a.k)}: ${T(a.s[0])}`,15,11,true);
-  doc.setFillColor(225,225,225);doc.roundedRect(15,y-1,180,3.5,1.7,1.7,'F');const c=a.p>=100?[0,129,131]:a.p>=60?[232,163,23]:[217,0,13];doc.setFillColor(...c);doc.roundedRect(15,y-1,Math.max(1.5,1.8*a.p),3.5,1.7,1.7,'F');y+=6;
-  txt(`${T('Current {0}',f(a.cur))}  |  ${T('Goal {0}',f(a.goal))}`,15,9,false,[100,100,100]);txt(a.adv(a.g),15,10);txt(a.why().t,15,8.5,false,[110,110,110]);y+=2});
- chk(30);y+=2;txt(T('Assumptions:'),15,12,true);
- txt(assump(L),15,9,false,[100,100,100]);
+ const L=last,doc=new jsPDF({unit:'mm',format:'a4'}),W=210,M=14,CW=W-2*M;
+ const RED=[217,0,13],TEAL=[0,129,131],DK=[17,17,22],GR=[105,105,115],LT=[245,246,248],AMB=[214,150,0];
+ const san=s=>String(s).replace(/−/g,'-').replace(/≤/g,'<=').replace(/≥/g,'>=').replace(/[–—]/g,'-').replace(/·/g,'|').replace(/×/g,'x').replace(/[^\x00-\xFF]/g,'');
+ let y=0;
+ const tx=(s,x,yy,sz,b,c,al)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.text(san(s),x,yy,al?{align:al}:undefined)};
+ const wr=(s,x,sz,c,w)=>{doc.setFont('helvetica','normal');doc.setFontSize(sz);doc.setTextColor(...c);const ls=doc.splitTextToSize(san(s),w);const h=ls.length*sz*.41;need(h+1);doc.text(ls,x,y);y+=h+1};
+ const need=h=>{if(y+h>278){doc.addPage();y=18}};
+ const col=p=>p>=100?TEAL:p>=60?AMB:RED,tint=p=>p>=100?[228,244,244]:p>=60?[253,244,222]:[253,235,236];
+ const head=s=>{need(16);doc.setFillColor(...RED);doc.rect(M,y-4.5,1.6,6.5,'F');tx(s,M+4,y,13,1,DK);y+=9};
+ doc.setFillColor(...DK);doc.rect(0,0,W,42,'F');doc.setFillColor(...RED);doc.rect(0,42,W/2,2,'F');doc.setFillColor(...TEAL);doc.rect(W/2,42,W/2,2,'F');
+ tx('FS TAKAFUL NEEDS ANALYZER',M,14,9,1,[25,185,187]);
+ tx(T('Takaful Needs Analysis Report'),M,26,19,1,[255,255,255]);
+ tx(new Date().toLocaleDateString('en-MY'),M,35,9,0,[170,170,180]);
+ tx(T('Prepared for:').replace(/:$/,''),W-M,13,8,0,[170,170,180],'right');
+ tx(L.d.name||'-',W-M,21,15,1,[255,255,255],'right');
+ tx(T('Age {0}, retirement at {1}',L.d.age,L.d.retire),W-M,28,8.5,0,[170,170,180],'right');
+ y=54;
+ const o=Math.round(L.overall),tot=L.gaps.death+L.gaps.ci+L.gaps.med,cw=(CW-6)/2,x2=M+cw+6;
+ doc.setFillColor(...LT);doc.roundedRect(M,y,cw,48,3,3,'F');doc.setFillColor(...col(L.overall));doc.rect(M,y+4,1.6,40,'F');
+ tx(T('Overall protection:').replace(/:$/,''),M+7,y+9,9,1,GR);
+ tx(o+'%',M+7,y+29,38,1,col(L.overall));
+ doc.setFillColor(222,222,228);doc.roundedRect(M+7,y+34,cw-14,4,2,2,'F');doc.setFillColor(...col(L.overall));doc.roundedRect(M+7,y+34,Math.max(3,(cw-14)*Math.min(100,L.overall)/100),4,2,2,'F');
+ tx(B('Current protection vs goal','Perlindungan semasa berbanding sasaran'),M+7,y+43,7.5,0,GR);
+ doc.setFillColor(...LT);doc.roundedRect(x2,y,cw,48,3,3,'F');doc.setFillColor(...(tot>0?RED:TEAL));doc.rect(x2,y+4,1.6,40,'F');
+ tx(T('Recommended additional coverage'),x2+7,y+9,9,1,GR);
+ tx(RM(tot),x2+7,y+27,tot>=1e7?19:23,1,tot>0?RED:TEAL);
+ tx(B('Total of the three gaps below','Jumlah tiga jurang di bawah'),x2+7,y+36,8,0,GR);
+ tx(B('Death/TPD + critical illness + medical','Kematian/TPD + penyakit kritikal + perubatan'),x2+7,y+41,8,0,GR);
+ y+=60;
+ head(T('Recommended additional coverage'));
+ const gw=(CW-8)/3;
+ [['Death / TPD gap',L.gaps.death],['Critical illness gap',L.gaps.ci],['Medical limit gap',L.gaps.med]].forEach(([t,g],i)=>{const x=M+i*(gw+4),c=g>0?RED:TEAL;doc.setFillColor(...LT);doc.roundedRect(x,y,gw,30,2.5,2.5,'F');doc.setFillColor(...c);doc.roundedRect(x,y,gw,2.2,1,1,'F');tx(T(t),x+4,y+9,8.5,1,GR);tx(RM(g),x+4,y+20,g>=1e7?13:16,1,c);tx(g>0?T('Recommended additional coverage'):T('No gap. Fully covered'),x+4,y+26.5,6.5,0,GR)});
+ y+=40;
+ head(B('Area-by-area review','Semakan mengikut bidang'));
+ L.A_.forEach(a=>{
+  const f=a.fmt||RM,c=col(a.p),w=a.why();
+  need(48);
+  doc.setFillColor(...c);doc.roundedRect(M,y-3.8,30,5.6,2.8,2.8,'F');tx(T(a.s[0]),M+15,y+.2,7,1,[255,255,255],'center');
+  tx(T(a.k),M+34,y+.6,11,1,DK);tx(Math.round(a.p)+'%',W-M,y+1,15,1,c,'right');
+  y+=7;
+  doc.setFillColor(225,225,230);doc.roundedRect(M,y,CW,3.4,1.7,1.7,'F');doc.setFillColor(...c);doc.roundedRect(M,y,Math.max(2,CW*Math.min(100,a.p)/100),3.4,1.7,1.7,'F');
+  y+=7.5;
+  tx(T('Current {0}',f(a.cur)),M,y,8.5,0,GR);tx(T('Goal {0}',f(a.goal)),W-M,y,8.5,0,GR,'right');
+  y+=4;
+  doc.setFont('helvetica','bold');doc.setFontSize(9.5);
+  const ls=doc.splitTextToSize(san(a.adv(a.g)),CW-9),h=ls.length*4.2+5;need(h+2);
+  doc.setFillColor(...tint(a.p));doc.roundedRect(M,y,CW,h,1.8,1.8,'F');doc.setFillColor(...c);doc.rect(M,y,1.4,h,'F');
+  doc.setTextColor(...DK);doc.text(ls,M+5,y+5.2);y+=h+3;
+  if(a.cov){
+   w.l.forEach(([lb,vl])=>{need(6);const k=/^(Gap|Jurang)/.test(lb);if(k){doc.setFillColor(...tint(a.p));doc.rect(M,y-3.6,CW,5.6,'F')}tx(lb,M+2,y,k?9:8,k,k?DK:GR);tx(vl,W-M-2,y,k?9.5:8,1,k?c:DK,'right');doc.setDrawColor(228,228,234);doc.line(M,y+1.6,W-M,y+1.6);y+=5.4});
+   y+=1.5;wr(w.t,M+2,8,GR,CW-4);
+  }
+  y+=6;
+ });
+ doc.setFont('helvetica','normal');doc.setFontSize(7.8);
+ const as=doc.splitTextToSize(san(assump(L)),CW-10),ah=as.length*3.4+13;need(ah+4);
+ doc.setFillColor(...LT);doc.roundedRect(M,y,CW,ah,2.5,2.5,'F');tx(T('Assumptions:').replace(/:$/,''),M+5,y+6.5,9,1,DK);
+ doc.setFont('helvetica','normal');doc.setFontSize(7.8);doc.setTextColor(...GR);doc.text(as,M+5,y+11.5);
+ const n=doc.getNumberOfPages();
+ for(let i=1;i<=n;i++){doc.setPage(i);if(i>1){doc.setFillColor(...RED);doc.rect(0,0,W/2,2,'F');doc.setFillColor(...TEAL);doc.rect(W/2,0,W/2,2,'F')}doc.setDrawColor(215,215,222);doc.line(M,286,W-M,286);tx('FS Takaful Needs Analyzer',M,291,7.5,0,GR);tx(B('Page','Muka surat')+' '+i+' / '+n,W-M,291,7.5,0,GR,'right')}
  doc.save(`FS-Takaful-Needs-${(L.d.name||'Client').replace(/\s+/g,'-')}.pdf`);
 }
 function observe(){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal:not(.in)').forEach(x=>io.observe(x))}
@@ -304,7 +355,7 @@ function initTilt(){document.querySelectorAll('.tilt:not([data-t])').forEach(c=>
 document.getElementById('calc').onclick=calc;
 document.getElementById('lm').onclick=()=>setLang('ms');
 document.getElementById('le').onclick=()=>setLang('en');
-document.getElementById('reset').onclick=()=>{saved={};persist();buildForm();document.querySelectorAll('.inp').forEach(i=>i.value='');document.getElementById('results').className='hidden';err('');last=null;scrollTo({top:0,behavior:'smooth'})};
+document.getElementById('reset').onclick=()=>{saved={};persist();readRates();buildForm();applyStatic();buildBm();document.getElementById('results').className='hidden';err('');last=null;scrollTo({top:0,behavior:'smooth'})};
 setLang(lang);observe();
 </script>
 </body>
