@@ -368,5 +368,29 @@ document.getElementById('le').onclick=()=>setLang('en');
 document.getElementById('reset').onclick=()=>{saved={};persist();readRates();buildForm();applyStatic();buildBm();document.getElementById('results').className='hidden';err('');last=null;scrollTo({top:0,behavior:'smooth'})};
 setLang(lang);observe();
 </script>
+<script>
+  // Disable Right-Click Context Menu
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // Disable Keyboard Shortcuts for Developer Tools and View Source
+  document.addEventListener('keydown', function(e) {
+    // Disable F12
+    if (e.key === 'F12') {
+      e.preventDefault();
+    }
+    
+    // Disable Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (DevTools)
+    if (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) {
+      e.preventDefault();
+    }
+    
+    // Disable Ctrl+U (View Source)
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') {
+      e.preventDefault();
+    }
+  });
+</script>
 </body>
 </html>
